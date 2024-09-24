@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://www.appletechsoft.com/wp-content/uploads/2020/06/Hospital-Management-System.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5); /* 50% opacity */
+            z-index: 0;
+        }
+
+        .login-container {
+            background-color: #ffffff;
+            padding: 40px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            width: 320px;
+            z-index: 1;
+            position: relative;
+        }
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .login-container input[type="email"],
+        .login-container input[type="tel"] {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .login-container input[type="submit"] {
+            width: 100%;
+            background-color: #28a745;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .login-container input[type="submit"]:hover {
+            background-color: #218838;
+        }
+
+        .login-container .link {
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .login-container .link a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .login-container .link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <h2>Patient Login</h2>
+        <form id="loginForm">
+            <label for="inputEmail">Email ID:</label>
+            <input type="email" id="inputEmail" name="email" placeholder="Enter your email" required>
+
+            <label for="inputPhone">Phone Number:</label>
+            <input type="tel" id="inputPhone" name="phone" placeholder="Enter your phone number" required>
+
+            <input type="submit" value="Login">
+        </form>
+       
+    </div>
+
+    <script>
+        async function handleLogin(event) {
+            event.preventDefault(); // Prevent form submission
+
+            const email = document.getElementById('inputEmail').value;
+            const phone = document.getElementById('inputPhone').value;
+
+            const payload = {
+                role: 'patient',  // Setting role as 'patient'
+                email: email,
+                password: phone   // Using phone as password for patient
+            };
+
+            try {
+                const response = await fetch('http://127.0.0.1:8943/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                // Check if the response is HTML
+                const contentType = response.headers.get('Content-Type');
+                if (contentType && contentType.includes('text/html')) {
+                    const htmlResponse = await response.text(); // Get the HTML content
+                    document.body.innerHTML = htmlResponse; // Replace the body with the HTML response
+                    return; // Exit the function
+                }
+
+                // Check for JSON response
+                if (response.ok) {
+                    const data = await response.json();
+                    alert(data.message || 'Login successful!'); // Show success message
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.message || 'Login failed.'); // Show error message
+                }
+            } catch (error) {
+                console.error('Error during login:', error);
+                alert('An error occurred. Please try again later.');
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
+    </script>
+
+</body>
+</html>

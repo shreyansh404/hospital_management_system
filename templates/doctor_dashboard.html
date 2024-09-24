@@ -1,0 +1,193 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Doctor Dashboard" />
+        <meta name="author" content="Your Name" />
+        <title>Doctor Dashboard</title>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+        <style>
+            body {
+                background: linear-gradient(135deg, #4e73df, #1cc88a);
+                color: #fff;
+            }
+            .card {
+                background: rgba(255, 255, 255, 0.1);
+                border: none;
+                border-radius: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container mt-5">
+            <h1 class="text-center">Doctor Dashboard</h1>
+            
+            <!-- Doctor Information Card -->
+            <div class="card mt-4">
+                <div class="card-header">Doctor: Dr. John Doe</div>
+            </div>
+
+            <!-- Add Patient Form -->
+            <div class="card mt-4">
+                <div class="card-header">Add Patient</div>
+                <div class="card-body">
+                    <form id="addPatientForm" onsubmit="addPatient(event)">
+                        <div class="mb-3">
+                            <label for="patientFirstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="patientFirstName" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="patientLastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="patientLastName" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="patientEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="patientEmail" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="patientPhoneNumber" class="form-label">Phone Number</label>
+                            <input type="text" class="form-control" id="patientPhoneNumber" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="patientAddress" class="form-label">Address</label>
+                            <input type="text" class="form-control" id="patientAddress" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="patientReport" class="form-label">Patient Report URL</label>
+                            <input type="url" class="form-control" id="patientReport" placeholder="http://example.com/report.pdf" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Patient</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- View Patients Section -->
+            <div class="card mt-4">
+                <div class="card-header">View Patients</div>
+                <div class="card-body">
+                    <!-- Button to view patients -->
+                    <button id="viewPatientsButton" class="btn btn-info" onclick="fetchPatients()">View Patients</button>
+                    <table class="table table-striped mt-3">
+                        <thead>
+                            <tr>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Email</th>
+                                <th>Phone Number</th>
+                                <th>Address</th>
+                                <th>Report</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- JavaScript Section -->
+        <script>
+            const patients = []; // Array to store patient data
+
+            // Function to fetch patients from the API
+            function fetchPatients() {
+                fetch('http://127.0.0.1:8943/patient')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok ' + response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Clear existing patients
+                        patients.length = 0;
+
+                        // Map the API response to the patients array
+                        data.message.forEach(patient => {
+                            patients.push({
+                                id: patient.id,
+                                first_name: patient.first_name,
+                                last_name: patient.last_name,
+                                email: patient.email,
+                                phone_number: patient.phone_number,
+                                address: patient.address,
+                                report_url: patient.report_url || "#" // Handle missing report_url
+                            });
+                        });
+                        updatePatientsTable(patients);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching patients:', error);
+                        alert('Error fetching patients: ' + error.message);
+                    });
+            }
+
+            // Fetch patients on page load
+            window.onload = fetchPatients;
+
+            // Function to add a new patient
+            function addPatient(event) {
+                event.preventDefault(); // Prevent form submission
+
+                const firstName = document.getElementById('patientFirstName').value;
+                const lastName = document.getElementById('patientLastName').value;
+                const email = document.getElementById('patientEmail').value;
+                const phoneNumber = document.getElementById('patientPhoneNumber').value;
+                const address = document.getElementById('patientAddress').value;
+                const report = document.getElementById('patientReport').value;
+
+                // Create a new patient object
+                const patient = {
+                    id: patients.length + 1, // Generate a simple ID
+                    first_name: firstName,
+                    last_name: lastName,
+                    email: email,
+                    phone_number: phoneNumber,
+                    address: address,
+                    doctor_id: 1, // Assume doctor ID is 1 for now
+                    status: true,
+                    report_url: report // Include report URL
+                };
+
+                // Add patient to the array
+                patients.push(patient);
+
+                // Update the table
+                updatePatientsTable(patients);
+
+                // Clear the form
+                document.getElementById('addPatientForm').reset();
+            }
+
+            // Function to update the table with patient data
+            function updatePatientsTable(data) {
+                const tableBody = document.getElementById('patientsTable');
+                tableBody.innerHTML = ''; // Clear existing rows
+
+                // Populate the table with the fetched data
+                data.forEach((patient, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${patient.first_name}</td>
+                        <td>${patient.last_name}</td>
+                        <td>${patient.email}</td>
+                        <td>${patient.phone_number}</td>
+                        <td>${patient.address}</td>
+                        <td><a href="${patient.report_url}" target="_blank">Download Report</a></td>
+                        <td><button class="btn btn-danger" onclick="removePatient(${index})">Remove</button></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            // Function to remove a patient from the list
+            function removePatient(index) {
+                patients.splice(index, 1); // Remove patient from the array
+                updatePatientsTable(patients); // Update the table
+            }
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    </body>
+    </html>

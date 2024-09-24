@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="Login Page" />
+    <meta name="author" content="Your Name" />
+    <title>Login - Hospital Management</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/styles.css" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #4e73df, #1cc88a);
+            color: #fff;
+        }
+        #layoutAuthentication {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 10px;
+        }
+        .form-control {
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+        .form-control:focus {
+            border-color: #1cc88a;
+            box-shadow: 0 0 5px rgba(28, 217, 170, 0.5);
+        }
+        .btn-primary {
+            background-color: #1cc88a;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #17a673;
+        }
+        .social-icons {
+            margin: 20px 0;
+        }
+        .social-icons a {
+            margin: 0 10px;
+            color: #fff;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="layoutAuthentication">
+        <div id="layoutAuthentication_content">
+            <main>
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-5">
+                            <div class="card shadow-lg border-0 rounded-lg mt-5">
+                                <div class="card-header text-center">
+                                    <h3 class="font-weight-light my-4">ABC Hospital Management CMS!</h3>
+                                </div>
+                                <div class="card-body">
+                                    <form id="loginForm" onsubmit="return false;"> 
+                                        <div class="mb-3">
+                                            <label class="form-label">Role:</label>
+                                            <div>
+                                                <input type="radio" id="roleDoctor" name="role" value="doctor" required checked />
+                                                <label for="roleDoctor" class="me-3">Doctor</label>
+                                                <input type="radio" id="rolePatient" name="role" value="patient" required />
+                                                <label for="rolePatient">Patient</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="inputEmail" type="email" placeholder="name@example.com" required />
+                                            <label for="inputEmail">Email address</label>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="inputPassword" type="password" placeholder="Password" required />
+                                            <label for="inputPassword">Password</label>
+                                        </div>
+                                        <div class="form-floating mb-3" id="phoneField" style="display: none;">
+                                            <input class="form-control" id="inputPhone" type="text" placeholder="Phone Number" />
+                                            <label for="inputPhone">Phone Number</label>
+                                        </div>
+                                        <div class="form-check mb-3">
+                                            <input class="form-check-input" id="inputRememberPassword" type="checkbox" />
+                                            <label class="form-check-label" for="inputRememberPassword">Remember Me</label>
+                                        </div>
+                                        <div class="d-grid gap-2">
+                                            <button class="btn btn-primary" type="button" onclick="handleLogin(event)">Login</button>
+                                        </div>
+                                        <div class="text-center mt-3">
+                                            <a class="small" href="password.html">Forgot Password?</a>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="card-footer text-center py-3">
+                                    <div class="small social-icons">
+                                        <a href="#" title="Login with Google"><i class="fab fa-google"></i></a>
+                                        <a href="#" title="Login with Facebook"><i class="fab fa-facebook"></i></a>
+                                        <a href="#" title="Login with Twitter"><i class="fab fa-twitter"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script>
+        document.querySelectorAll('input[name="role"]').forEach((radio) => {
+            radio.addEventListener('change', function() {
+                const phoneField = document.getElementById('phoneField');
+                const passwordField = document.getElementById('inputPassword');
+
+                if (this.value === 'patient') {
+                    passwordField.style.display = 'none'; // Hide password field
+                    phoneField.style.display = 'block'; // Show phone number field
+                } else {
+                    passwordField.style.display = 'block'; // Show password field
+                    phoneField.style.display = 'none'; // Hide phone number field
+                }
+            });
+        });
+
+        async function handleLogin(event) {
+            event.preventDefault(); // Prevent form submission
+
+            const role = document.querySelector('input[name="role"]:checked').value; // Get selected role
+            const email = document.getElementById('inputEmail').value;
+            let password = document.getElementById('inputPassword').value;
+            const phone = document.getElementById('inputPhone').value;
+
+            // Use phone as password if the role is patient
+            if (role === 'patient') {
+                password = phone; // Set password to phone number
+            }
+
+            const payload = {
+                role: role,
+                email: email,
+                password: password
+            };
+
+            try {
+                const response = await fetch('http://127.0.0.1:8943/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                // Check if the response is HTML
+                const contentType = response.headers.get('Content-Type');
+                if (contentType && contentType.includes('text/html')) {
+                    const htmlResponse = await response.text(); // Get the HTML content
+                    document.body.innerHTML = htmlResponse; // Replace the body with the HTML response
+                    return; // Exit the function
+                }
+
+                // Check for JSON response
+                if (response.ok) {
+                    const data = await response.json();
+                    alert(data.message || 'Login successful!'); // Show success message
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.message || 'Login failed.'); // Show error message
+                }
+            } catch (error) {
+                console.error('Error during login:', error);
+                alert('An error occurred. Please try again later.');
+            }
+        }
+    </script>
+</body>
+</html>

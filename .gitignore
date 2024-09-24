@@ -106,7 +106,8 @@ ipython_config.py
 #pdm.lock
 #   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
 #   in version control.
-#   https://pdm.fming.dev/latest/usage/project/#working-with-version-control
+#   https://pdm.fming.dev/latest/Technology stack
+usage/project/#working-with-version-control
 .pdm.toml
 .pdm-python
 .pdm-build/
@@ -116,7 +117,8 @@ __pypackages__/
 
 # Celery stuff
 celerybeat-schedule
-celerybeat.pid
+celerybeat.pidTechnology stack
+
 
 # SageMath parsed files
 *.sage.py
@@ -129,6 +131,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+Technology stack
 
 # Spyder project settings
 .spyderproject
@@ -153,6 +156,10 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+venv
+.venv
+/venv
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
