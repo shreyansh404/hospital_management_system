@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, status, HTTPException
 from sqlalchemy.orm import Session
 from database.database import get_db 
 from model.docter_model import DoctorCreate
-from model.model import Doctor, Patient
+from model.database_model import Doctor, Patient
 from database.database import templates
 from database.helper_function import generate_unique_id
 routes = APIRouter()
@@ -22,11 +22,15 @@ async def register_patient(request: Request, doctor: DoctorCreate, db:Session = 
         db.commit()
         return templates.TemplateResponse("doctor_dashboard.html", {"request": request})
     except Exception as e:
-        return {"Error": f"Please try again {e}"}
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Please try again {e}!")
 @routes.patch("/patient/{patient_id}", response_description="Update patient")
 async def update_patient(patient_id: int, patient: DoctorCreate, db: Session = Depends(get_db)):
-    db.query(Patient).filter(Patient.id == patient_id).update(patient.dict())
-    db.commit()
-    return {"message": "Patient updated successfully"}
+    try:
+        db.query(Patient).filter(Patient.id == patient_id).update(patient.dict())
+        db.commit()
+        return {"message": "Patient updated successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Please try again {e}!")
+
 
 
