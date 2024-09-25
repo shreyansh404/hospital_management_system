@@ -12,7 +12,7 @@ class Patient(Base):
     email = Column(String, unique=True, nullable=False)
     phone_number = Column(String, unique=True, nullable=False)
     address = Column(String)
-    doctor_id = Column(Integer, ForeignKey("doctors.id"))
+    doctor_id = Column(Integer)
     status = Column(Boolean, default=True)
     
 # Doctor model

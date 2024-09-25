@@ -34,6 +34,10 @@
         h1 {
             text-align: center;
         }
+        #content-container {
+            margin-top: 20px; /* Add some space above the content */
+            text-align: center; /* Center the content */
+        }
     </style>
 </head>
 <body>
@@ -50,17 +54,16 @@
             <label for="email">Email:</label><br>
             <input type="email" id="email" name="email" required><br><br>
 
-            <label for="password_hash">Password Hash:</label><br>
-            <input type="text" id="password_hash" name="password_hash" required placeholder="Enter password hash"><br><br>
-
             <label for="phone_number">Phone Number:</label><br>
             <input type="tel" id="phone_number" name="phone_number" required><br><br>
 
             <label for="address">Address:</label><br>
             <textarea id="address" name="address" required></textarea><br><br>
 
-            <label for="doctor_id">Doctor ID:</label><br>
-            <input type="number" id="doctor_id" name="doctor_id" required><br><br>
+            <label for="doctor_id">Doctor:</label><br>
+            <select id="doctor_id" name="doctor_id" required>
+                <option value="" disabled selected>Select a Doctor</option>
+            </select><br><br>
 
             <label for="status">Status:</label><br>
             <input type="checkbox" id="status" name="status" value="true" checked>
@@ -70,7 +73,35 @@
         </form>
     </div>
 
+    <div id="content-container"></div> <!-- Container to display the response HTML -->
+
     <script>
+        // Fetch doctors when the page loads
+        async function fetchDoctors() {
+            try {
+                const response = await fetch('http://127.0.0.1:8943/doctor/');
+                if (response.ok) {
+                    const doctors = await response.json();
+                    const doctorSelect = document.getElementById('doctor_id');
+
+                    // Populate the dropdown with doctor names and IDs
+                    doctors.forEach(doctor => {
+                        const option = document.createElement('option');
+                        option.value = doctor.id; // Set value as doctor ID
+                        option.textContent = `${doctor.first_name} ${doctor.last_name}`; // Display name
+                        doctorSelect.appendChild(option);
+                    });
+                } else {
+                    console.error('Failed to fetch doctors');
+                }
+            } catch (error) {
+                console.error('Error fetching doctors:', error);
+            }
+        }
+
+        // Call the fetchDoctors function when the page loads
+        window.onload = fetchDoctors;
+
         document.getElementById('patientForm').addEventListener('submit', async function(event) {
             event.preventDefault(); // Prevent the default form submission
 
@@ -78,14 +109,14 @@
                 first_name: document.getElementById('first_sname').value,
                 last_name: document.getElementById('last_name').value,
                 email: document.getElementById('email').value,
-                password_hash: document.getElementById('password_hash').value,
                 phone_number: document.getElementById('phone_number').value,
                 address: document.getElementById('address').value,
-                doctor_id: parseInt(document.getElementById('doctor_id').value),
+                doctor_id: parseInt(document.getElementById('doctor_id').value), // Get selected doctor ID
                 status: document.getElementById('status').checked ? true : false,
             };
 
             try {
+                console.error(formData);
                 const response = await fetch('http://127.0.0.1:8943/doctor/patient', { // Correct URL
                     method: 'POST',
                     headers: {
@@ -93,13 +124,16 @@
                     },
                     body: JSON.stringify(formData),
                 });
+
                 if (response.ok) {
-                    alert('Patient added successfully!');
-                    // Optionally, you can reset the form here
-                    document.getElementById('patientForm').reset();
+                    const htmlContent = await response.text(); // Get the response as HTML text
+                    
+                    // Replace the content with the HTML response
+                    document.getElementById('content-container').innerHTML = htmlContent;
+
                 } else {
                     const errorData = await response.json();
-                    alert('Error: ' + errorData.message || 'Failed to add patient');
+                    alert('Error: ' + (errorData.message || 'Failed to add patient'));
                 }
             } catch (error) {
                 console.error('Error:', error);

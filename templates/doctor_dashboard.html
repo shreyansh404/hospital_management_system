@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="description" content="Doctor Dashboard" />
     <meta name="author" content="Your Name" />
     <title>Doctor Dashboard - Hospital Management</title>
@@ -18,28 +18,31 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: blue; /* Set background color to plain blue */
+            background-color: blue;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
         }
 
         .overlay {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.5);
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(255, 255, 255, 0.3); /* Reduce opacity */
             z-index: 1;
         }
 
         .container {
             position: relative;
-            max-width: 1200px;
+            max-width: 90%;
             margin: 20px auto;
-            padding: 20px;
-            background-color: lightgrey; /* Set main box color to light grey */
+            padding: 10px; /* Reduce padding for smaller screens */
+            background-color: lightgrey;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             z-index: 2;
+            height: calc(100vh - 40px); /* Adjust height to fit the viewport */
+            overflow-y: auto; /* Allow vertical scrolling */
         }
 
         header {
@@ -50,84 +53,62 @@
         }
 
         .greeting {
-            font-size: 24px;
+            font-size: 1.5rem;
             font-weight: bold;
             display: flex;
             align-items: center;
         }
 
         .greeting i {
-            font-size: 40px; /* Adjust icon size */
-            color: #007bff; /* Change color if needed */
-            margin-right: 10px; /* Space between icon and name */
-        }
-
-        .search-bar {
-            display: flex;
-            align-items: center;
-            background-color: #f0f0f0;
-            padding: 5px;
-            border-radius: 6px;
-        }
-
-        .search-bar input {
-            border: none;
-            background: transparent;
-            outline: none;
-            margin-left: 10px;
-            flex: 1; /* Allow input to grow */
+            font-size: 2rem;
+            color: #007bff;
+            margin-right: 10px;
         }
 
         .stats {
             margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
+            flex-wrap: wrap;
         }
-        
+
         .stats .card {
-            background-color: white; /* Set box color to white */
+            background-color: white;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
             padding: 20px;
-            flex: 1;
-            margin-right: 20px;
-        }
-
-        .stats .card:last-child {
-            margin-right: 0;
+            flex-basis: 23%;
+            margin-bottom: 20px;
         }
 
         .card h2 {
             margin: 0;
-            font-size: 18px;
-            color: black; /* Set title color to black */
+            font-size: 1rem;
+            color: black;
         }
 
         .card p {
             margin: 0;
-            font-size: 24px; /* Increase value font size */
-            color: blue; /* Set value color to blue */
+            font-size: 1.5rem;
+            color: blue;
         }
 
         .table-report-container {
             margin-top: 20px;
-            display: flex; /* Use flexbox for layout */
+            display: flex;
+            flex-wrap: wrap;
         }
 
-        .total-patients {
-            background-color: white; /* Set box color to white */
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-            padding: 20px;
-            margin-right: 20px; /* Space between the box and the patient list */
-            width: 200px; /* Set a fixed width for the total patients box */
+        .patients-list {
+            flex-grow: 1;
+            width: 100%;
         }
 
         table {
-            width: 100%; /* Table takes full width */
+            width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
-            background-color: white; /* Set table background to white */
+            background-color: white;
         }
 
         table, th, td {
@@ -143,41 +124,50 @@
             background-color: #f2f2f2;
         }
 
-        .chart-container {
-            margin-top: 20px;
-            background-color: white; /* Set box color to white */
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-        }
-
         .add-patient-btn {
-            margin-right: 10px; /* Space between the button and search bar */
+            margin-right: 10px;
         }
 
         .download-btn {
             margin-top: 10px;
         }
+
+        @media (max-width: 768px) {
+            .stats .card {
+                flex-basis: 45%;
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats .card {
+                flex-basis: 100%;
+                margin-bottom: 20px;
+            }
+
+            .greeting {
+                font-size: 1.2rem;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="overlay"></div> <!-- Overlay for background transparency -->
+    <div class="overlay"></div>
 
     <div class="container">
         <header>
             <div class="greeting">
-                <i class="fa fa-user-md"></i> <!-- Font Awesome icon -->
+                <i class="fa fa-user-md"></i> 
                 <h1>{{ doctor_name }}</h1>
             </div>
             <div>
-                <button class="btn btn-success add-patient-btn" onclick="window.location.href='/templates/add/paitent'">Add Patient</button> <!-- Navigate to Add Patient page -->
-                <div class="search-bar">
-                    <input type="text" aria-label="Search" placeholder="Enter patient name..." id="search-input">
-                    <button onclick="searchPatient()" aria-label="Search">
-                        <i class="fa fa-search" aria-hidden="true"></i> <!-- Font Awesome search icon -->
-                    </button>
-                </div>
+                <button class="btn btn-success add-patient-btn" onclick="window.location.href='/templates/add/patient'">Add Patient</button>
             </div>
         </header>
 
@@ -188,19 +178,18 @@
             </div>
             <div class="card total-bp-reports">
                 <h2>Total Blood Pressure Reports</h2>
-                <p>{{ get_total_blood_pressure_added }}</p> <!-- Count of blood pressure reports -->
+                <p>{{ get_total_blood_pressure_added }}</p>
             </div>
             <div class="card total-temperature-reports">
                 <h2>Total Temperature Reports</h2>
-                <p>{{ get_total_temperature_added }}</p> <!-- Count of temperature reports -->
+                <p>{{ get_total_temperature_added }}</p>
             </div>
             <div class="card total-hr-reports">
                 <h2>Total Heart Rate Reports</h2>
-                <p>{{ get_total_hr_added }}</p> <!-- Count of heart rate reports -->
+                <p>{{ get_total_hr_added }}</p>
             </div>
         </section>
         
-        <!-- Recent Patients Table -->
         <div class="table-report-container">
             <div class="patients-list">
                 <h2>Patients List</h2>
@@ -213,7 +202,7 @@
                             <th>Phone Number</th>
                             <th>Address</th>
                             <th>Status</th>
-                            <th>Actions</th> <!-- New column for actions -->
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -226,8 +215,9 @@
                             <td>{{ patient.address }}</td>
                             <td>{{ patient.status }}</td>
                             <td>
-                                <a href="/update_patient/{{ patient.id }}" class="btn btn-primary btn-sm">Update</a> <!-- Update button -->
-                                <button class="btn btn-danger btn-sm" onclick="reportPatient('{{ patient.id }}')">Report</button> <!-- Report button -->
+                                <a href="#" class="btn btn-primary btn-sm" onclick="updatePatient('{{ patient.id }}')">Update</a>
+                                <button class="btn btn-danger btn-sm" onclick="reportPatient('{{ patient.id }}')">Add Report</button>
+                                <button class="btn btn-info btn-sm" onclick="viewReport('{{ patient.id }}')">View Report</button>
                             </td>
                         </tr>
                         {% endfor %}
@@ -235,18 +225,38 @@
                 </table>
             </div>
         </div>
-
-        <!-- Body Temperature Chart -->
-        <div class="chart-container">
-            <h2>Body Temperature Report</h2>
-            <canvas id="temperatureChart" width="400" height="200"></canvas>
-            <button class="btn btn-primary download-btn">Download Report</button> <!-- Placeholder for download button -->
-        </div>
     </div>
 
-    <!-- Include Bootstrap JS and dependencies (optional) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <!-- Include Chart.js for chart visualization (optional) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    
+    <script>
+        function viewReport(patientId) {
+            const apiUrl = `http://127.0.0.1:8943/report/${patientId}`;
+            console.error("------------")
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok: ' + response.statusText);
+                    }
+                    return response.json(); 
+                })
+                .then(data => {
+                    console.log('Report Data:', data); 
+                    window.location.href = `/view_report/${patientId}`;
+                })
+                .catch(error => {
+                    console.error('Error fetching report:', error);
+                    alert('Error fetching report. Please try again later.'); 
+                });
+        }
+
+        function reportPatient(patientId) {
+            window.location.href = '/add_report/' + patientId;
+        }
+
+        function updatePatient(patientId) {
+            window.location.href = '/update_patient/' + patientId; 
+        }
+    </script>
 </body>
 </html>

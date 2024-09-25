@@ -10,7 +10,6 @@ from sqlalchemy import func
 routes = APIRouter()
 
 
-
 @routes.post("/login", response_description="Login module")
 async def login(payload: LoginModel, request: Request, db: Session = Depends(get_db)):
     """
@@ -19,7 +18,6 @@ async def login(payload: LoginModel, request: Request, db: Session = Depends(get
     try:
         email_id = payload.email
         password = payload.password
-        
         if payload.role == RoleEnum.DOCTOR:
         # Fetch doctor based on email and password in one query
             doctor_exists = db.query(Doctor).filter_by(email=email_id).first()        
@@ -62,4 +60,5 @@ async def login(payload: LoginModel, request: Request, db: Session = Depends(get
         else:
             return templates.TemplateResponse("404.html", {"request": request, "message": "Invalid role!."})
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Please try again {e}!")
