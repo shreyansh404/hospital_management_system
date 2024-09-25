@@ -29,7 +29,7 @@ class Doctor(Base):
 class Report(Base):
     __tablename__ = "report"
     id = Column(Integer, primary_key=True, index=True)
-    type = Column(String, nullable=False)
-    value = Column(Float, nullable=False)
-    timestamp = Column(DateTime, server_default=func.now())
-    patient_id = Column(Integer, ForeignKey("patients.id"))
+    type = Column(String, nullable=False, )
+    value = Column(String, nullable=False)
+    created_at = Column(DateTime, server_default=func.now())
+    patient_id = Column(Integer)

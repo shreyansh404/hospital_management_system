@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 class PatientCreate(BaseModel):
     id: int
-    first_name: str
+    first_sname: str
     last_name:str 
     email: str
     phone_number: str
