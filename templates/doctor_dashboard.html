@@ -1,193 +1,351 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="Doctor Dashboard" />
-        <meta name="author" content="Your Name" />
-        <title>Doctor Dashboard</title>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
-        <style>
-            body {
-                background: linear-gradient(135deg, #4e73df, #1cc88a);
-                color: #fff;
-            }
-            .card {
-                background: rgba(255, 255, 255, 0.1);
-                border: none;
-                border-radius: 10px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container mt-5">
-            <h1 class="text-center">Doctor Dashboard</h1>
-            
-            <!-- Doctor Information Card -->
-            <div class="card mt-4">
-                <div class="card-header">Doctor: Dr. John Doe</div>
-            </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="description" content="Doctor Dashboard" />
+    <meta name="author" content="Your Name" />
+    <title>Doctor Dashboard - Hospital Management</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-            <!-- Add Patient Form -->
-            <div class="card mt-4">
-                <div class="card-header">Add Patient</div>
-                <div class="card-body">
-                    <form id="addPatientForm" onsubmit="addPatient(event)">
-                        <div class="mb-3">
-                            <label for="patientFirstName" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="patientFirstName" required />
-                        </div>
-                        <div class="mb-3">
-                            <label for="patientLastName" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="patientLastName" required />
-                        </div>
-                        <div class="mb-3">
-                            <label for="patientEmail" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="patientEmail" required />
-                        </div>
-                        <div class="mb-3">
-                            <label for="patientPhoneNumber" class="form-label">Phone Number</label>
-                            <input type="text" class="form-control" id="patientPhoneNumber" required />
-                        </div>
-                        <div class="mb-3">
-                            <label for="patientAddress" class="form-label">Address</label>
-                            <input type="text" class="form-control" id="patientAddress" required />
-                        </div>
-                        <div class="mb-3">
-                            <label for="patientReport" class="form-label">Patient Report URL</label>
-                            <input type="url" class="form-control" id="patientReport" placeholder="http://example.com/report.pdf" required />
-                        </div>
-                        <button type="submit" class="btn btn-primary">Add Patient</button>
-                    </form>
-                </div>
-            </div>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: blue;
+            overflow-x: hidden;
+        }
 
-            <!-- View Patients Section -->
-            <div class="card mt-4">
-                <div class="card-header">View Patients</div>
-                <div class="card-body">
-                    <!-- Button to view patients -->
-                    <button id="viewPatientsButton" class="btn btn-info" onclick="fetchPatients()">View Patients</button>
-                    <table class="table table-striped mt-3">
-                        <thead>
-                            <tr>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Email</th>
-                                <th>Phone Number</th>
-                                <th>Address</th>
-                                <th>Report</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="patientsTable"></tbody>
-                    </table>
-                </div>
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(255, 255, 255, 0.3);
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            max-width: 90%;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: lightgrey;
+            border-radius: 8px;
+            z-index: 2;
+            height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .greeting {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .greeting i {
+            font-size: 2rem;
+            color: #007bff;
+            margin-right: 10px;
+        }
+
+        .stats {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .stats .card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            flex-basis: 23%;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .card p {
+            margin: 0;
+            font-size: 1.5rem;
+            color: blue;
+        }
+
+        .table-report-container {
+            margin-top: 20px;
+        }
+
+        .patients-list {
+            flex-grow: 1;
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background-color: white;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .add-patient-btn {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay"></div>
+
+    <div class="container">
+        <header>
+            <div class="greeting">
+                <i class="fa fa-user-md"></i> 
+                <h1>{{ doctor_name }}</h1>
+            </div>
+            <div>
+                <button class="btn btn-success add-patient-btn" onclick="window.location.href='/templates/add/patient'">Add Patient</button>
+            </div>
+        </header>
+
+        <section class="stats">
+            <div class="card total-patients">
+                <h2>Total Patients</h2>
+                <p>{{ get_count_patient }}</p>
+            </div>
+            <div class="card total-bp-reports">
+                <h2>Total Blood Pressure Reports</h2>
+                <p>{{ get_total_blood_pressure_added }}</p>
+            </div>
+            <div class="card total-temperature-reports">
+                <h2>Total Temperature Reports</h2>
+                <p>{{ get_total_temperature_added }}</p>
+            </div>
+            <div class="card total-hr-reports">
+                <h2>Total Heart Rate Reports</h2>
+                <p>{{ get_total_hr_added }}</p>
+            </div>
+        </section>
+        
+        <div class="table-report-container">
+            <div class="patients-list">
+                <h2>Patients List</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Phone Number</th>
+                            <th>Address</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for patient in patients %}
+                        <tr>
+                            <td>{{ patient.first_name }}</td>
+                            <td>{{ patient.last_name }}</td>
+                            <td>{{ patient.email }}</td>
+                            <td>{{ patient.phone_number }}</td>
+                            <td>{{ patient.address }}</td>
+                            <td>{{ patient.status }}</td>
+                            <td>
+                                <!-- console.log('{{ patient.id }}', '{{ patient.first_name }}', '{{ patient.last_name }}', '{{ patient.email }}', '{{ patient.phone_number }}', '{{ patient.address }}') -->
+                                <a href="#" class="btn btn-primary btn-sm" 
+                                onclick="openUpdateModal('{{ patient.id }}', '{{ patient.first_name }}', '{{ patient.last_name }}', '{{ patient.email }}', '{{ patient.phone_number }}', '{{ patient.address }}', '{{ patient.last_name }}')">
+                                Update Patient
+                                </a>                                
+                                <button class="btn btn-danger btn-sm" onclick="openAddReportModal('{{ patient.id }}')">Add Report</button>
+                                <button class="btn btn-info btn-sm" onclick="viewReport('{{ patient.id }}')">View Report</button>
+                            </td>   
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
+    </div>
 
-        <!-- JavaScript Section -->
-        <script>
-            const patients = []; // Array to store patient data
+<div class="modal fade" id="addReportModal" tabindex="-1" aria-labelledby="addReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addReportModalLabel">Add Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addReportForm">
+                    <input type="hidden" id="patientIdForReport" name="patientId">
+                    <div class="mb-3">
+                        <label for="bp" class="form-label">Blood Pressure</label>
+                        <input type="text" class="form-control" id="bp" name="bp" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bodytemp" class="form-label">Body Temperature</label>
+                        <input type="number" class="form-control" id="bodytemp" name="bodytemp" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="heartrate" class="form-label">Heart Rate</label>
+                        <input type="number" class="form-control" id="heartrate" name="heartrate" required>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="ADDREPORTSUBMIT" onclick="submitForm()" >Add Report</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+  
+    <div class="modal fade" id="updatePatientModal" tabindex="-1" aria-labelledby="updatePatientModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updatePatientModalLabel">Update Patient</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updatePatientForm">
+                    <input type="hidden" id="patientId" name="patientId">
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="firstName" name="firstName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastName" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" name="lastName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phoneNumber" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" class="form-control" id="address" name="address" required>
+                    </div>
+                    <div class="mb-3"></div>
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" id="status" name="status" required>
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="updatePatient()">Update Patient</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
-            // Function to fetch patients from the API
-            function fetchPatients() {
-                fetch('http://127.0.0.1:8943/patient')
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok ' + response.statusText);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        // Clear existing patients
-                        patients.length = 0;
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Open the add report modal    
+        function openAddReportModal(patientId) {
+            console.error(patientId)
+            document.getElementById("patientIdForReport").value = patientId;
+            console.error("Hello")
+            var reportModal = new bootstrap.Modal(document.getElementById("addReportModal"));
+            console.error(reportModal)
+            reportModal.show();
+            console.error("last")
+        }
+        function openUpdateModal(id, firstName, lastName, email, phoneNumber, address, stats) {
+            document.getElementById("patientId").value = id;
+            document.getElementById("firstName").value = firstName;
+            document.getElementById("lastName").value = lastName;
+            document.getElementById("email").value = email;
+            document.getElementById("phoneNumber").value = phoneNumber;
+            document.getElementById("address").value = address;
+            document.getElementById("stauts").value = status
+            var updateModal = new bootstrap.Modal(document.getElementById("updatePatientModal"));
+            updateModal.show();
+        }
 
-                        // Map the API response to the patients array
-                        data.message.forEach(patient => {
-                            patients.push({
-                                id: patient.id,
-                                first_name: patient.first_name,
-                                last_name: patient.last_name,
-                                email: patient.email,
-                                phone_number: patient.phone_number,
-                                address: patient.address,
-                                report_url: patient.report_url || "#" // Handle missing report_url
-                            });
-                        });
-                        updatePatientsTable(patients);
-                    })
-                    .catch(error => {
-                        console.error('Error fetching patients:', error);
-                        alert('Error fetching patients: ' + error.message);
-                    });
-            }
+        // Handle the form submission for updating patient data
+        
+        document.addEventListener("DOMContentLoaded", function() {});
+        function openAddReportModal(patientId) {
+        document.getElementById("patientIdForReport").value = patientId;
+        var reportModal = new bootstrap.Modal(document.getElementById("addReportModal"));
+        console.error(reportModal);
+        reportModal.show();
+        }   
 
-            // Fetch patients on page load
-            window.onload = fetchPatients;
+        // Handle the form submission for adding a report
+        function submitForm(){
+            console.log("zfadffaj",document.getElementById("ADDREPORTSUBMIT"));
 
-            // Function to add a new patient
-            function addPatient(event) {
-                event.preventDefault(); // Prevent form submission
+            // event.preventDefault();
+            
+            const patientId = document.getElementById("patientIdForReport").value;
+            const bp = document.getElementById("bp").value;
+            const bodytemp = document.getElementById("bodytemp").value;
+            const heartrate = document.getElementById("heartrate").value;
 
-                const firstName = document.getElementById('patientFirstName').value;
-                const lastName = document.getElementById('patientLastName').value;
-                const email = document.getElementById('patientEmail').value;
-                const phoneNumber = document.getElementById('patientPhoneNumber').value;
-                const address = document.getElementById('patientAddress').value;
-                const report = document.getElementById('patientReport').value;
-
-                // Create a new patient object
-                const patient = {
-                    id: patients.length + 1, // Generate a simple ID
-                    first_name: firstName,
-                    last_name: lastName,
-                    email: email,
-                    phone_number: phoneNumber,
-                    address: address,
-                    doctor_id: 1, // Assume doctor ID is 1 for now
-                    status: true,
-                    report_url: report // Include report URL
-                };
-
-                // Add patient to the array
-                patients.push(patient);
-
-                // Update the table
-                updatePatientsTable(patients);
-
-                // Clear the form
-                document.getElementById('addPatientForm').reset();
-            }
-
-            // Function to update the table with patient data
-            function updatePatientsTable(data) {
-                const tableBody = document.getElementById('patientsTable');
-                tableBody.innerHTML = ''; // Clear existing rows
-
-                // Populate the table with the fetched data
-                data.forEach((patient, index) => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${patient.first_name}</td>
-                        <td>${patient.last_name}</td>
-                        <td>${patient.email}</td>
-                        <td>${patient.phone_number}</td>
-                        <td>${patient.address}</td>
-                        <td><a href="${patient.report_url}" target="_blank">Download Report</a></td>
-                        <td><button class="btn btn-danger" onclick="removePatient(${index})">Remove</button></td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            }
-
-            // Function to remove a patient from the list
-            function removePatient(index) {
-                patients.splice(index, 1); // Remove patient from the array
-                updatePatientsTable(patients); // Update the table
-            }
+            const payload = {
+                id: Date.now(),  // Generate a unique ID based on current timestamp
+                patient_id: patientId,
+                bp: bp,
+                bodytemp: bodytemp,
+                heartrate: heartrate
+            };
+            console.error(payload)
+            // Send POST request to add the report
+            fetch('http://127.0.0.1:8943/report/add_report', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Report added successfully');
+                    location.reload(); // Reload the page to reflect the new report
+                } else {
+                    alert('Error adding report');
+                }
+            })
+            .catch(error => {
+                alert('Error adding report: ' + error);
+            });
+    }    
         </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    </body>
-    </html>
+</body>
+</html>

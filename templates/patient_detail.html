@@ -7,17 +7,14 @@
     <title>Patient Detail</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
-    <!-- Font Awesome CSS for icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
     <style>
         body {
-            /* Background image with 50% transparency */
             background: url('https://www.appletechsoft.com/wp-content/uploads/2020/06/Hospital-Management-System.jpg') no-repeat center center fixed;
             background-size: cover;
             position: relative;
         }
 
-        /* Semi-transparent overlay */
         body::before {
             content: '';
             position: absolute;
@@ -25,11 +22,10 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5); /* 50% transparent black overlay */
+            background-color: rgba(0, 0, 0, 0.5); 
             z-index: 0;
         }
 
-        /* Content on top of the background */
         .container {
             margin-top: 50px;
             z-index: 1;
@@ -55,13 +51,6 @@
             border: none;
         }
 
-        .card-body p {
-            margin-bottom: 0;
-            font-size: 16px;
-            color: #333;
-        }
-
-        /* Patient image */
         .patient-image {
             display: block;
             margin: 0 auto;
@@ -72,31 +61,25 @@
             border: 5px solid #4e73df;
         }
 
-        /* Author icon */
         .author-icon {
             font-size: 20px;
             color: #4e73df;
             margin-right: 8px;
         }
-
     </style>
 </head>
 <body>
-
     <div class="container">
         <div class="card">
             <div class="card-header">
                 <h3>Patient Details</h3>
             </div>
             <div class="card-body text-center">
-                <!-- Patient Picture -->
                 <img src="https://cdn-icons-png.flaticon.com/512/1430/1430453.png" alt="Patient Image" class="patient-image mb-4">
 
-                <!-- Patient Details -->
                 <div class="mb-3 row">
                     <label for="firstName" class="col-sm-3 col-form-label">
-                        <i class="fas fa-user author-icon"></i> <!-- Author icon -->
-                        First Name:
+                        <i class="fas fa-user author-icon"></i> First Name:
                     </label>
                     <div class="col-sm-9">
                         <p id="firstName">{{ patient.first_name }}</p>
@@ -105,8 +88,7 @@
 
                 <div class="mb-3 row">
                     <label for="lastName" class="col-sm-3 col-form-label">
-                        <i class="fas fa-user author-icon"></i> <!-- Author icon -->
-                        Last Name:
+                        <i class="fas fa-user author-icon"></i> Last Name:
                     </label>
                     <div class="col-sm-9">
                         <p id="lastName">{{ patient.last_name }}</p>
@@ -115,8 +97,7 @@
 
                 <div class="mb-3 row">
                     <label for="email" class="col-sm-3 col-form-label">
-                        <i class="fas fa-envelope author-icon"></i> <!-- Email icon -->
-                        Email:
+                        <i class="fas fa-envelope author-icon"></i> Email:
                     </label>
                     <div class="col-sm-9">
                         <p id="email">{{ patient.email }}</p>
@@ -125,8 +106,7 @@
 
                 <div class="mb-3 row">
                     <label for="phoneNumber" class="col-sm-3 col-form-label">
-                        <i class="fas fa-phone author-icon"></i> <!-- Phone icon -->
-                        Phone Number:
+                        <i class="fas fa-phone author-icon"></i> Phone Number:
                     </label>
                     <div class="col-sm-9">
                         <p id="phoneNumber">{{ patient.phone_number }}</p>
@@ -135,8 +115,7 @@
 
                 <div class="mb-3 row">
                     <label for="address" class="col-sm-3 col-form-label">
-                        <i class="fas fa-map-marker-alt author-icon"></i> <!-- Address icon -->
-                        Address:
+                        <i class="fas fa-map-marker-alt author-icon"></i> Address:
                     </label>
                     <div class="col-sm-9">
                         <p id="address">{{ patient.address }}</p>
@@ -145,13 +124,38 @@
 
                 <!-- Download Report Button -->
                 <div class="text-center">
-                    <a href="http://example.com/report.pdf" target="_blank" class="btn btn-download btn-lg">
-                        Download Report
-                    </a>
+                    <button class="btn btn-download btn-lg" onclick="viewReport('{{ patient.patientId }}')">Download Report</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        function viewReport(patientId) {
+            const apiUrl = `http://127.0.0.1:8943/report/${patientId}`;
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok: ' + response.statusText);
+                    }
+                    return response.blob(); 
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(new Blob([blob]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', `report_${patientId}.pdf`); 
+                    document.body.appendChild(link);
+                    link.click();
+                    link.parentNode.removeChild(link);
+                    alert("Report downloaded successfully!");
+                })
+                .catch(error => {
+                    console.error('Error fetching report:', error);
+                    alert('Error fetching report. Please try again later.');
+                });
+        }
+    </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </body>
