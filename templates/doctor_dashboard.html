@@ -19,7 +19,7 @@
             margin: 0;
             padding: 0;
             background-color: blue;
-            overflow-x: hidden; /* Prevent horizontal scrolling */
+            overflow-x: hidden;
         }
 
         .overlay {
@@ -28,7 +28,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: rgba(255, 255, 255, 0.3); /* Reduce opacity */
+            background-color: rgba(255, 255, 255, 0.3);
             z-index: 1;
         }
 
@@ -36,13 +36,12 @@
             position: relative;
             max-width: 90%;
             margin: 20px auto;
-            padding: 10px; /* Reduce padding for smaller screens */
+            padding: 10px;
             background-color: lightgrey;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             z-index: 2;
-            height: calc(100vh - 40px); /* Adjust height to fit the viewport */
-            overflow-y: auto; /* Allow vertical scrolling */
+            height: calc(100vh - 40px);
+            overflow-y: auto;
         }
 
         header {
@@ -75,7 +74,6 @@
         .stats .card {
             background-color: white;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
             padding: 20px;
             flex-basis: 23%;
             margin-bottom: 20px;
@@ -84,7 +82,6 @@
         .card h2 {
             margin: 0;
             font-size: 1rem;
-            color: black;
         }
 
         .card p {
@@ -95,8 +92,6 @@
 
         .table-report-container {
             margin-top: 20px;
-            display: flex;
-            flex-wrap: wrap;
         }
 
         .patients-list {
@@ -126,33 +121,6 @@
 
         .add-patient-btn {
             margin-right: 10px;
-        }
-
-        .download-btn {
-            margin-top: 10px;
-        }
-
-        @media (max-width: 768px) {
-            .stats .card {
-                flex-basis: 45%;
-                margin-bottom: 20px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .stats .card {
-                flex-basis: 100%;
-                margin-bottom: 20px;
-            }
-
-            .greeting {
-                font-size: 1.2rem;
-            }
-
-            header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
         }
     </style>
 </head>
@@ -215,8 +183,8 @@
                             <td>{{ patient.address }}</td>
                             <td>{{ patient.status }}</td>
                             <td>
-                                <a href="#" class="btn btn-primary btn-sm" onclick="updatePatient('{{ patient.id }}')">Update</a>
-                                <button class="btn btn-danger btn-sm" onclick="reportPatient('{{ patient.id }}')">Add Report</button>
+                                <a href="#" class="btn btn-primary btn-sm" onclick="openUpdateModal('{{ patient.id }}', '{{ patient.first_name }}', '{{ patient.last_name }}', '{{ patient.email }}', '{{ patient.phone_number }}', '{{ patient.address }}')">Update</a>
+                                <button class="btn btn-danger btn-sm" onclick="openAddReportModal('{{ patient.id }}')">Add Report</button>
                                 <button class="btn btn-info btn-sm" onclick="viewReport('{{ patient.id }}')">View Report</button>
                             </td>
                         </tr>
@@ -227,36 +195,87 @@
         </div>
     </div>
 
+<div class="modal fade" id="addReportModal" tabindex="-1" aria-labelledby="addReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addReportModalLabel">Add Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addReportForm">
+                    <input type="hidden" id="patientIdForReport" name="patientId">
+                    <div class="mb-3">
+                        <label for="bp" class="form-label">Blood Pressure</label>
+                        <input type="text" class="form-control" id="bp" name="bp" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bodytemp" class="form-label">Body Temperature</label>
+                        <input type="number" class="form-control" id="bodytemp" name="bodytemp" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="heartrate" class="form-label">Heart Rate</label>
+                        <input type="number" class="form-control" id="heartrate" name="heartrate" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="ADDREPORTSUBMIT" onclick="openAddReportModal(1)" >Add Report</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+  
+
+    <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    
     <script>
-        function viewReport(patientId) {
-            const apiUrl = `http://127.0.0.1:8943/report/${patientId}`;
-            console.error("------------")
-            fetch(apiUrl)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok: ' + response.statusText);
-                    }
-                    return response.json(); 
-                })
-                .then(data => {
-                    console.log('Report Data:', data); 
-                    window.location.href = `/view_report/${patientId}`;
-                })
-                .catch(error => {
-                    console.error('Error fetching report:', error);
-                    alert('Error fetching report. Please try again later.'); 
-                });
+        // Open the add report modal    
+        function openAddReportModal(patientId) {
+            console.error(patientId)
+            document.getElementById("patientIdForReport").value = patientId;
+            console.error("Hello")
+            var reportModal = new bootstrap.Modal(document.getElementById("addReportModal"));
+            console.error(reportModal)
+            reportModal.show();
+            console.error("last")
         }
 
-        function reportPatient(patientId) {
-            window.location.href = '/add_report/' + patientId;
-        }
+        // Handle the form submission for adding a report
+        document.getElementById("addReportForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            
+            const patientId = document.getElementById("patientIdForReport").value;
+            const bp = document.getElementById("bp").value;
+            const bodytemp = document.getElementById("bodytemp").value;
+            const heartrate = document.getElementById("heartrate").value;
 
-        function updatePatient(patientId) {
-            window.location.href = '/update_patient/' + patientId; 
-        }
+            const payload = {
+                id: Date.now(),  // Generate a unique ID based on current timestamp
+                patient_id: patientId,
+                bp: bp,
+                bodytemp: bodytemp,
+                heartrate: heartrate
+            };
+            console.error(payload)
+            // Send POST request to add the report
+            fetch('http://127.0.0.1:8943/report/add_report', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Report added successfully');
+                    location.reload(); // Reload the page to reflect the new report
+                } else {
+                    alert('Error adding report');
+                }
+            })
+            .catch(error => {
+                alert('Error adding report: ' + error);
+            });
+        });
     </script>
 </body>
 </html>

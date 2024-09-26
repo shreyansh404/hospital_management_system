@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Request, HTTPException, status
 from sqlalchemy.orm import Session
 from database.database import get_db
 from database.helper_function import generate_unique_id, plat_graph_function
-from model.report_model import ReportCreation, VitalType
+from model.report_model import ReportCreation, VitalType, ReportORMModel
 from model.database_model import Report 
 
 routes = APIRouter()
@@ -66,9 +66,10 @@ async def get_patient_detail(request: Request, patient_id, db: Session = Depends
     """
         This API is used to get the patient details
     """
-    try:
-        patient_detail = db.query(Report).filter_by(patient_id=patient_id).all()
-        plat_graph_function(patient_detail)
-        return {"message": "Report saved successfully!."}
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Please try again {e}!")
+    # try:
+    patient_detail = db.query(Report).filter_by(patient_id=patient_id, type="body temperature").all()
+    report_models = [ReportORMModel.from_orm(r).dict() for r in patient_detail]
+    plat_graph_function(report_models)
+    return {"message": "Report saved successfully!."}
+    # except Exception as e:
+    #     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Please try again {e}!")

@@ -26,7 +26,7 @@ def generate_unique_id():
 def plat_graph_function(response):
     timestamps = []
     temperatures = []
-
+    print(response)
     for entry in response:
         dt = datetime.fromtimestamp(entry['created_at'])
         timestamps.append(dt)
@@ -43,3 +43,4 @@ def plat_graph_function(response):
 
     plt.savefig('temperature_report.pdf')  # Save as PDF
     plt.show()
+    return

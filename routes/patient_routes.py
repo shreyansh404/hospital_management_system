@@ -51,8 +51,7 @@ async def update_patient_helper(
             patient.phone_number = patientPayload.phone_number
         if patientPayload.address:
             patient.address = patientPayload.address
-        if patientPayload.doctor_id is not None:
-            patient.doctor_id = patientPayload.doctor_id
+       
         patient.status = patientPayload.status
         db.commit()
 

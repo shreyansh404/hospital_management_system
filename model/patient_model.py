@@ -17,5 +17,4 @@ class PatientUpdate(BaseModel):
     email: str
     phone_number: str
     address: str
-    doctor_id: int
     status: bool = True

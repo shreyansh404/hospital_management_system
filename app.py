@@ -35,6 +35,6 @@ async def get_root(request: Request):
 async def get_template(page:str,request: Request):
     return templates.TemplateResponse(f"{page}", {"request": request})
 
-@app.get("/templates/add/paitent", response_description="Added Paitent")
+@app.get("/templates/add/patient", response_description="Added Paitent")
 async def add_paitent_helper(request: Request):
     return templates.TemplateResponse("add_paitent.html", {"request": request})

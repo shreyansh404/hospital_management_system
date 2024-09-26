@@ -9,9 +9,19 @@ class VitalType(str, Enum):
     HEARTRATE = "heart rate"
 
 class ReportCreation(BaseModel):
-    id: int
     bp: str = 0
     bodytemp: int = 0
     heartrate: int = 0
     patient_id:int 
     created_at: int = int(datetime.now().timestamp())
+
+    class Config:
+        from_attributes=True
+
+
+class ReportORMModel(BaseModel):
+    type: str
+    value: str
+    created_at: int
+    class Config:
+        from_attributes=True

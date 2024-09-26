@@ -146,6 +146,106 @@
 
         document.getElementById('loginForm').addEventListener('submit', handleLogin); // Ensure this matches the form ID
     </script>
+    <script defer>
+        function viewReport(patientId) {
+            const apiUrl = `http://127.0.0.1:8943/report/${patientId}`;
+            console.error("------------")
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok: ' + response.statusText);
+                    }
+                    return response.json(); 
+                })
+                .then(data => {
+                    console.log('Report Data:', data); 
+                    alert("Report downloaded successfully!")
+                    // window.location.href = `/view_report/${patientId}`;
+                })
+                .catch(error => {
+                    console.error('Error fetching report:', error);
+                    alert('Error fetching report. Please try again later.'); 
+                });
+        }
+
+        function reportPatient(patientId) {
+            window.location.href = '/add_report/' + patientId;
+        }
+
+        // function updatePatient(patientId) {
+        //     window.location.href = '/update_patient/' + patientId; 
+        // }
+        function openUpdateModal(id, firstName, lastName, email, phoneNumber, address) {
+            document.getElementById("patientId").value = id;
+            document.getElementById("firstName").value = firstName;
+            document.getElementById("lastName").value = lastName;
+            document.getElementById("email").value = email;
+            document.getElementById("phoneNumber").value = phoneNumber;
+            document.getElementById("address").value = address;
+            var updateModal = new bootstrap.Modal(document.getElementById("updatePatientModal"));
+            updateModal.show();
+        }
+
+        // Handle the form submission for updating patient data
+        
+        document.addEventListener("DOMContentLoaded", function() {});
+        function openAddReportModal(patientId) {
+    console.error(patientId);
+    document.getElementById("patientIdForReport").value = patientId;
+    console.error("Hello");
+    var reportModal = new bootstrap.Modal(document.getElementById("addReportModal"));
+    console.error(reportModal);
+    reportModal.show();
+    console.error("last");
+}
+
+// Handle the form submission for adding a report
+    document.getElementById("addReportForm").addEventListener("ADDREPORTSUBMIT", function(event) {
+        event.preventDefault();  // Prevent the default form submission behavior
+
+        const patientId = document.getElementById("patientIdForReport").value;
+        const bp = document.getElementById("bp").value;
+        const bodytemp = document.getElementById("bodytemp").value;
+        const heartrate = document.getElementById("heartrate").value;
+
+        const payload = {
+            id: Date.now(),  // Generate a unique ID based on the current timestamp
+            patient_id: patientId,
+            bp: bp,
+            bodytemp: bodytemp,
+            heartrate: heartrate
+        };
+        console.error(payload);
+
+        // Send POST request to add the report
+        fetch('http://127.0.0.1:8943/report/add_report', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Report added successfully');
+                location.reload(); // Reload the page to reflect the new report
+            } else {
+                alert('Error adding report');
+            }
+        })
+        .catch(error => {
+            alert('Error adding report: ' + error);
+        });
+    });
+
+
+        
+    </script>
+    <script src="js/script.js" defer></script>
+    <!-- Load Bootstrap's JavaScript and Popper.js after your body content -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.7/umd/popper.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
 
 </body>
 </html>
