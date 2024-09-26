@@ -12,10 +12,10 @@ async def get_all_patient(
     request: Request, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)
 ):
     """
-    This API will return all the patient details
+        This API will return all the patient details
     """
     try:
-        get_patient = db.query(Patient).offset(skip).limit(limit).all()
+        get_patient = db.query(Patient).all()
         get_count_patient = db.query(Patient).count()
         return {"message": "Success", "data": get_patient, "count": get_count_patient}
     except Exception as e:
@@ -33,7 +33,7 @@ async def update_patient_helper(
     db: Session = Depends(get_db),
 ):
     """
-    This function will update a patient by their ID.
+        This function will update a patient by their ID.
     """
     try:
         patient = db.query(Patient).filter(Patient.id == patient_id).first()

@@ -51,9 +51,9 @@ async def login(payload: LoginModel, request: Request, db: Session = Depends(get
                     "last_name": paitent_exits.last_name,
                     "email": paitent_exits.email,
                     "phone_number": paitent_exits.phone_number,
-                    "address": paitent_exits.address
+                    "address": paitent_exits.address,
+                    "patientId": paitent_exits.id
                 }
-                print(patient_data)
                 return templates.TemplateResponse("patient_detail.html", {"request": request, "patient": patient_data})
             else:
                 return templates.TemplateResponse("401.html",{"request": request,"message":"Invalid credentials for Doctor."})

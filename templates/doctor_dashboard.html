@@ -183,10 +183,14 @@
                             <td>{{ patient.address }}</td>
                             <td>{{ patient.status }}</td>
                             <td>
-                                <a href="#" class="btn btn-primary btn-sm" onclick="openUpdateModal('{{ patient.id }}', '{{ patient.first_name }}', '{{ patient.last_name }}', '{{ patient.email }}', '{{ patient.phone_number }}', '{{ patient.address }}')">Update</a>
+                                <!-- console.log('{{ patient.id }}', '{{ patient.first_name }}', '{{ patient.last_name }}', '{{ patient.email }}', '{{ patient.phone_number }}', '{{ patient.address }}') -->
+                                <a href="#" class="btn btn-primary btn-sm" 
+                                onclick="openUpdateModal('{{ patient.id }}', '{{ patient.first_name }}', '{{ patient.last_name }}', '{{ patient.email }}', '{{ patient.phone_number }}', '{{ patient.address }}', '{{ patient.last_name }}')">
+                                Update Patient
+                                </a>                                
                                 <button class="btn btn-danger btn-sm" onclick="openAddReportModal('{{ patient.id }}')">Add Report</button>
                                 <button class="btn btn-info btn-sm" onclick="viewReport('{{ patient.id }}')">View Report</button>
-                            </td>
+                            </td>   
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -217,13 +221,56 @@
                         <label for="heartrate" class="form-label">Heart Rate</label>
                         <input type="number" class="form-control" id="heartrate" name="heartrate" required>
                     </div>
-                    <button type="submit" class="btn btn-primary" id="ADDREPORTSUBMIT" onclick="openAddReportModal(1)" >Add Report</button>
+                    <button type="button" class="btn btn-primary" id="ADDREPORTSUBMIT" onclick="submitForm()" >Add Report</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
   
+    <div class="modal fade" id="updatePatientModal" tabindex="-1" aria-labelledby="updatePatientModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updatePatientModalLabel">Update Patient</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updatePatientForm">
+                    <input type="hidden" id="patientId" name="patientId">
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="firstName" name="firstName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastName" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" name="lastName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phoneNumber" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" class="form-control" id="address" name="address" required>
+                    </div>
+                    <div class="mb-3"></div>
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" id="status" name="status" required>
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="updatePatient()">Update Patient</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
@@ -238,10 +285,33 @@
             reportModal.show();
             console.error("last")
         }
+        function openUpdateModal(id, firstName, lastName, email, phoneNumber, address, stats) {
+            document.getElementById("patientId").value = id;
+            document.getElementById("firstName").value = firstName;
+            document.getElementById("lastName").value = lastName;
+            document.getElementById("email").value = email;
+            document.getElementById("phoneNumber").value = phoneNumber;
+            document.getElementById("address").value = address;
+            document.getElementById("stauts").value = status
+            var updateModal = new bootstrap.Modal(document.getElementById("updatePatientModal"));
+            updateModal.show();
+        }
+
+        // Handle the form submission for updating patient data
+        
+        document.addEventListener("DOMContentLoaded", function() {});
+        function openAddReportModal(patientId) {
+        document.getElementById("patientIdForReport").value = patientId;
+        var reportModal = new bootstrap.Modal(document.getElementById("addReportModal"));
+        console.error(reportModal);
+        reportModal.show();
+        }   
 
         // Handle the form submission for adding a report
-        document.getElementById("addReportForm").addEventListener("submit", function(event) {
-            event.preventDefault();
+        function submitForm(){
+            console.log("zfadffaj",document.getElementById("ADDREPORTSUBMIT"));
+
+            // event.preventDefault();
             
             const patientId = document.getElementById("patientIdForReport").value;
             const bp = document.getElementById("bp").value;
@@ -275,7 +345,7 @@
             .catch(error => {
                 alert('Error adding report: ' + error);
             });
-        });
-    </script>
+    }    
+        </script>
 </body>
 </html>

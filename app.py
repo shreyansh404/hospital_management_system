@@ -10,7 +10,9 @@ from routes.report_routes import routes as report
 app = FastAPI()
 
 origins = [
-    "http::127.0.0.1:8943"
+    "http::127.0.0.1:8943",
+    "http://localhost:8943"   # Allow localhost too
+
 ]
 
 app.add_middleware(

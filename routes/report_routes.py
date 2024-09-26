@@ -66,10 +66,10 @@ async def get_patient_detail(request: Request, patient_id, db: Session = Depends
     """
         This API is used to get the patient details
     """
-    # try:
-    patient_detail = db.query(Report).filter_by(patient_id=patient_id, type="body temperature").all()
-    report_models = [ReportORMModel.from_orm(r).dict() for r in patient_detail]
-    plat_graph_function(report_models)
-    return {"message": "Report saved successfully!."}
-    # except Exception as e:
-    #     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Please try again {e}!")
+    try:
+        patient_detail = db.query(Report).filter_by(patient_id=patient_id, type="body temperature").all()
+        report_models = [ReportORMModel.from_orm(r).dict() for r in patient_detail]
+        plat_graph_function(report_models)
+        return {"message": "Report saved successfully!."}
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Please try again {e}!")

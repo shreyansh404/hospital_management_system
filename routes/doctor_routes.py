@@ -10,16 +10,13 @@ from database.helper_function import generate_unique_id
 routes = APIRouter()
 
 
-@routes.get("/dashboard", response_description="Dashboard Detail")
-async def get_dashboard_details(doctor_id: int, db: Session = Depends(get_db)):
-    patient_count = db.query(Patient).filter_by(doctor_id=doctor_id).count()
-    return {"patients": patient_count}
-
-
 @routes.post("/patient", response_description="Add Doctor")
 async def register_patient(
     request: Request, doctor: PatientCreate, db: Session = Depends(get_db)
 ):
+    """
+        This API is used add a patient 
+    """
     try:
         doctor.id = generate_unique_id()
         exist_patient = (
@@ -48,6 +45,9 @@ async def register_patient(
 async def update_patient(
     patient_id: int, patient: DoctorCreate, db: Session = Depends(get_db)
 ):
+    """
+        This API is used to update the patient 
+    """
     try:
         db.query(Patient).filter(Patient.id == patient_id).update(patient.dict())
         db.commit()
